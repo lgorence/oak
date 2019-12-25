@@ -6,7 +6,7 @@ find_package(PkgConfig REQUIRED)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/FindWlroots.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/FindPixman.cmake")
 
-set(SOURCES src/main.c)
+set(SOURCES src/main.c src/input.c src/output.c)
 
 add_definitions(-DWLR_USE_UNSTABLE)
 

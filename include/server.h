@@ -2,6 +2,8 @@
 
 #include <wayland-server-core.h>
 
+#include <wlr/types/wlr_compositor.h>
+
 struct oak_server {
     struct wl_display *wl_display;
     struct wl_event_loop *wl_event_loop;
@@ -14,24 +16,4 @@ struct oak_server {
 
     struct wlr_backend *backend;
     struct wlr_compositor *compositor;
-};
-
-struct oak_output {
-    struct wlr_output *wlr_output;
-    struct oak_server *server;
-    struct timespec last_frame;
-
-    struct wl_listener destroy;
-    struct wl_listener frame;
-
-    struct wl_list link;
-};
-
-struct oak_input_device {
-    struct wlr_input_device *wlr_input_device;
-    struct oak_server *server;
-
-    struct wl_listener destroy;
-
-    struct wl_list link;
 };
