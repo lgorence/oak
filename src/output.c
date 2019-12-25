@@ -8,6 +8,29 @@
 #include <wlr/types/wlr_matrix.h>
 #include <wlr/types/wlr_surface.h>
 
+void new_output_notify(struct wl_listener *listener, void *data) {
+    struct oak_server *server = wl_container_of(listener, server, new_output);
+    struct wlr_output *wlr_output = data;
+
+    if (!wl_list_empty(&wlr_output->modes)) {
+        struct wlr_output_mode *mode = wl_container_of(wlr_output->modes.prev, mode, link);
+        wlr_output_set_mode(wlr_output, mode);
+    }
+
+    struct oak_output *output = calloc(1, sizeof(struct oak_output));
+    clock_gettime(CLOCK_MONOTONIC, &output->last_frame);
+    output->server = server;
+    output->wlr_output = wlr_output;
+
+    wl_list_insert(&server->outputs, &output->link);
+    output->destroy.notify = output_destroy_notify;
+    wl_signal_add(&wlr_output->events.destroy, &output->destroy);
+    output->frame.notify = output_frame_notify;
+    wl_signal_add(&wlr_output->events.frame, &output->frame);
+
+    wlr_output_create_global(wlr_output);
+}
+
 void output_destroy_notify(struct wl_listener *listener, void *data) {
     struct oak_output *output = wl_container_of(listener, output, destroy);
     wl_list_remove(&output->link);
@@ -51,27 +74,4 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
 
     wlr_renderer_end(renderer);
     wlr_output_commit(wlr_output);
-}
-
-void new_output_notify(struct wl_listener *listener, void *data) {
-    struct oak_server *server = wl_container_of(listener, server, new_output);
-    struct wlr_output *wlr_output = data;
-
-    if (!wl_list_empty(&wlr_output->modes)) {
-        struct wlr_output_mode *mode = wl_container_of(wlr_output->modes.prev, mode, link);
-        wlr_output_set_mode(wlr_output, mode);
-    }
-
-    struct oak_output *output = calloc(1, sizeof(struct oak_output));
-    clock_gettime(CLOCK_MONOTONIC, &output->last_frame);
-    output->server = server;
-    output->wlr_output = wlr_output;
-
-    wl_list_insert(&server->outputs, &output->link);
-    output->destroy.notify = output_destroy_notify;
-    wl_signal_add(&wlr_output->events.destroy, &output->destroy);
-    output->frame.notify = output_frame_notify;
-    wl_signal_add(&wlr_output->events.frame, &output->frame);
-
-    wlr_output_create_global(wlr_output);
 }
