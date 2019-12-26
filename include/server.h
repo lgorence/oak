@@ -14,6 +14,10 @@ struct oak_server {
     struct wl_listener new_input;
     struct wl_list inputs;
 
+    struct wl_listener new_surface;
+
     struct wlr_backend *backend;
     struct wlr_compositor *compositor;
+
+    struct wlr_xdg_shell_v6 *xdg_shell;
 };

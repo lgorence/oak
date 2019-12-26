@@ -12,6 +12,11 @@
 #include "input.h"
 #include "output.h"
 
+void new_surface_notify(struct wl_listener *listener, void *data) {
+    struct wlr_xdg_surface_v6 *surface = data;
+    wlr_xdg_toplevel_v6_set_activated(surface, true);
+}
+
 int main(void) {
     struct oak_server server;
 
@@ -48,8 +53,10 @@ int main(void) {
     wlr_idle_create(server.wl_display);
 
     server.compositor = wlr_compositor_create(server.wl_display, wlr_backend_get_renderer(server.backend));
+    server.xdg_shell = wlr_xdg_shell_v6_create(server.wl_display);
 
-    wlr_xdg_shell_v6_create(server.wl_display);
+    server.new_surface.notify = new_surface_notify;
+    wl_signal_add(&server.xdg_shell->events.new_surface, &server.new_surface);
 
     system("gnome-terminal -- htop &");
 

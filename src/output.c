@@ -15,6 +15,8 @@ void new_output_notify(struct wl_listener *listener, void *data) {
     if (!wl_list_empty(&wlr_output->modes)) {
         struct wlr_output_mode *mode = wl_container_of(wlr_output->modes.prev, mode, link);
         wlr_output_set_mode(wlr_output, mode);
+    } else {
+        wlr_output_set_custom_mode(wlr_output, 720, 1440, 0);
     }
 
     struct oak_output *output = calloc(1, sizeof(struct oak_output));
