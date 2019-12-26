@@ -63,7 +63,7 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
             continue;
         }
         struct wlr_box render_box = {
-                .x = 20, .y = 20,
+                .x = 0, .y = 0,
                 .width = surface->current.width,
                 .height = surface->current.height
         };

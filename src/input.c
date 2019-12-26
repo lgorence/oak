@@ -1,9 +1,11 @@
 #include "input.h"
 
+#include <wlr/types/wlr_keyboard.h>
+#include <wlr/types/wlr_pointer.h>
+#include <wlr/types/wlr_seat.h>
 #include <wlr/types/wlr_touch.h>
 
 #include <stdlib.h>
-#include <wlr/types/wlr_pointer.h>
 
 void new_input_notify(struct wl_listener *listener, void *data) {
     struct oak_server *server = wl_container_of(listener, server, new_input);
@@ -17,6 +19,17 @@ void new_input_notify(struct wl_listener *listener, void *data) {
     switch (wlr_input_device->type) {
         case WLR_INPUT_DEVICE_KEYBOARD:
             printf("Detected as keyboard.\n");
+            struct xkb_rule_names rules = {0};
+            struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+            struct xkb_keymap *keymap = xkb_map_new_from_names(context, &rules,
+                                                               XKB_KEYMAP_COMPILE_NO_FLAGS);
+            wlr_keyboard_set_keymap(wlr_input_device->keyboard, keymap);
+            xkb_keymap_unref(keymap);
+            xkb_context_unref(context);
+            wlr_keyboard_set_repeat_info(wlr_input_device->keyboard, 25, 600);
+            input->keyboard_key.notify = keyboard_key_notify;
+            wl_signal_add(&wlr_input_device->keyboard->events.key, &input->keyboard_key);
+            wlr_seat_set_keyboard(server->seat, wlr_input_device);
             break;
         case WLR_INPUT_DEVICE_POINTER:
             printf("Detected as pointer.\n");
@@ -50,6 +63,7 @@ void input_destroy_notify(struct wl_listener *listener, void *data) {
 
     switch (wlr_input_device->type) {
         case WLR_INPUT_DEVICE_KEYBOARD:
+            wl_list_remove(&input->keyboard_key.link);
             break;
         case WLR_INPUT_DEVICE_POINTER:
             wl_list_remove(&input->pointer_button.link);
@@ -63,6 +77,15 @@ void input_destroy_notify(struct wl_listener *listener, void *data) {
     }
 
     free(input);
+}
+
+void keyboard_key_notify(struct wl_listener *listener, void *data) {
+    struct oak_input_device *input = wl_container_of(listener, input, keyboard_key);
+    struct oak_server *server = input->server;
+    struct wlr_event_keyboard_key *event = data;
+
+    wlr_seat_set_keyboard(server->seat, input->wlr_input_device);
+    wlr_seat_keyboard_notify_key(server->seat, event->time_msec, event->keycode, event->state);
 }
 
 void pointer_button_notify(struct wl_listener *listener, void *data) {

@@ -1,20 +1,30 @@
-#include "server.h"
-
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <wlr/backend.h>
 #include <wlr/types/wlr_gtk_primary_selection.h>
 #include <wlr/types/wlr_idle.h>
 #include <wlr/types/wlr_xdg_shell_v6.h>
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "input.h"
 #include "output.h"
+#include "server.h"
 
-void new_surface_notify(struct wl_listener *listener, void *data) {
+static void surface_map(struct wl_listener *listener, void *data) {
+}
+
+static void new_surface_notify(struct wl_listener *listener, void *data) {
     struct wlr_xdg_surface_v6 *surface = data;
+    struct oak_server *server = wl_container_of(listener, server, new_surface);
+    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(server->seat);
+
+    wlr_xdg_toplevel_v6_set_fullscreen(surface, true);
+    wlr_xdg_toplevel_v6_set_size(surface, 720, 1440);
     wlr_xdg_toplevel_v6_set_activated(surface, true);
+
+    wlr_seat_keyboard_notify_enter(server->seat, surface->surface, keyboard->keycodes, keyboard->num_keycodes,
+                                   &keyboard->modifiers);
 }
 
 int main(void) {
@@ -27,6 +37,8 @@ int main(void) {
 
     server.backend = wlr_backend_autocreate(server.wl_display, NULL);
     assert(server.backend);
+
+    server.seat = wlr_seat_create(server.wl_display, "seat0");
 
     wl_list_init(&server.outputs);
     server.new_output.notify = new_output_notify;
@@ -61,6 +73,8 @@ int main(void) {
     system("gnome-terminal -- htop &");
 
     wl_display_run(server.wl_display);
+
+    wl_display_destroy_clients(server.wl_display);
     wl_display_destroy(server.wl_display);
 
     return 0;
