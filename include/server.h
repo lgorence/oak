@@ -10,6 +10,7 @@ struct oak_server {
 
     struct wl_list outputs;
     struct wl_list inputs;
+    struct wl_list views;
 
     struct wl_listener new_output;
     struct wl_listener new_input;

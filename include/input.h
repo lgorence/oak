@@ -5,13 +5,13 @@
 #include "server.h"
 
 struct oak_input_device {
-    struct wlr_input_device *wlr_input_device;
+    struct wlr_input_device *wlr_device;
     struct oak_server *server;
 
-    struct wl_listener destroy;
+    struct oak_keyboard *keyboard;
 
-    // Keyboard events
-    struct wl_listener keyboard_key;
+    // Common events
+    struct wl_listener destroy;
 
     // Pointer events
     struct wl_listener pointer_button;
@@ -23,9 +23,18 @@ struct oak_input_device {
     struct wl_list link;
 };
 
+struct oak_keyboard {
+    struct oak_input_device *device;
+
+    // Keyboard events
+    struct wl_listener keyboard_key;
+};
+
 void input_destroy_notify(struct wl_listener *listener, void *data);
 
-void new_input_notify(struct wl_listener *listener, void *data);
+void input_new_notify(struct wl_listener *listener, void *data);
+
+void input_new_keyboard(struct oak_input_device *oak_device, struct wlr_input_device *wlr_device);
 
 void keyboard_key_notify(struct wl_listener *listener, void *data);
 
