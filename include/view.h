@@ -2,6 +2,8 @@
 
 #include <wlr/types/wlr_xdg_shell_v6.h>
 
+#include "server.h"
+
 struct oak_view {
     struct wl_list link;
 
@@ -14,3 +16,9 @@ struct oak_view {
     uint32_t x;
     uint32_t y;
 };
+
+void surface_map_notify(struct wl_listener *listener, void *data);
+
+void surface_destroy_notify(struct wl_listener *listener, void *data);
+
+void surface_new_notify(struct wl_listener *listener, void *data);

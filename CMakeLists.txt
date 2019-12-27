@@ -7,7 +7,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/FindWlroots.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/FindPixman.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/FindXkbCommon.cmake")
 
-set(SOURCES src/main.c src/input.c src/output.c)
+set(SOURCES src/main.c src/input.c src/output.c src/view.c)
 
 add_definitions(-DWLR_USE_UNSTABLE)
 
