@@ -15,10 +15,12 @@ struct oak_server {
     struct wl_listener new_output;
     struct wl_listener new_input;
     struct wl_listener new_surface;
+    struct wl_listener layer_shell_new_surface;
 
     struct wlr_backend *backend;
     struct wlr_compositor *compositor;
     struct wlr_seat *seat;
 
     struct wlr_xdg_shell_v6 *xdg_shell;
+    struct wlr_layer_shell_v1 *layer_shell;
 };
