@@ -18,3 +18,5 @@ add_executable(oak ${SOURCES})
 add_dependencies(oak wayland_protocols)
 target_include_directories(oak PUBLIC include/ ${PIXMAN_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/protocol_header)
 target_link_libraries(oak ${WLR_LIBRARIES} ${XKBCOMMON_LIBRARIES} ${PIXMAN_LIBRARIES} wayland-server)
+
+install(TARGETS oak DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
