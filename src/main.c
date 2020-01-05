@@ -72,7 +72,7 @@ int main(void) {
     server.layer_shell_new_surface.notify = layer_shell_new_surface_notify;
     wl_signal_add(&server.layer_shell->events.new_surface, &server.layer_shell_new_surface);
 
-    system("gnome-terminal -- htop &");
+    system("weston-terminal --shell=/usr/bin/htop &");
 
     wl_display_run(server.wl_display);
 
