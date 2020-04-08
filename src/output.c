@@ -1,4 +1,5 @@
 #include "output.h"
+#include "view.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -56,9 +57,10 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
     float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
     wlr_renderer_clear(renderer, color);
 
-    struct wl_resource *_surface;
-    wl_resource_for_each(_surface, &server->compositor->surface_resources) {
-        struct wlr_surface *surface = wlr_surface_from_resource(_surface);
+    struct oak_view *_view;
+    wl_list_for_each(_view, &server->views, link) {
+        //struct wlr_surface *surface = wlr_surface_from_resource(_view->surface);
+        struct wlr_surface *surface = _view->surface->surface;
         if (!wlr_surface_has_buffer(surface)) {
             continue;
         }
@@ -73,6 +75,22 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
         wlr_render_texture_with_matrix(renderer, texture, &matrix, 1.0f);
         wlr_surface_send_frame_done(surface, &now);
     }
+    /*wl_resource_for_each(_surface, &server->compositor->surface_resources) {
+        struct wlr_surface *surface = wlr_surface_from_resource(_surface);
+        if (!wlr_surface_has_buffer(surface)) {
+            continue;
+        }
+        struct wlr_box render_box = {
+                .x = 0, .y = 0,
+                .width = surface->current.width,
+                .height = surface->current.height
+        };
+        float matrix[16];
+        struct wlr_texture *texture = wlr_surface_get_texture(surface);
+        wlr_matrix_project_box(&matrix, &render_box, surface->current.transform, 0, &wlr_output->transform_matrix);
+        wlr_render_texture_with_matrix(renderer, texture, &matrix, 1.0f);
+        wlr_surface_send_frame_done(surface, &now);
+    }*/
 
     wlr_renderer_end(renderer);
     wlr_output_commit(wlr_output);

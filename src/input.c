@@ -17,7 +17,7 @@ void input_new_notify(struct wl_listener *listener, void *data) {
     input->wlr_device = wlr_input_device;
 
     // TODO: probably should 'properly' implement this.
-    uint32_t caps = WL_SEAT_CAPABILITY_KEYBOARD;
+    uint32_t caps = WL_SEAT_CAPABILITY_KEYBOARD | WL_SEAT_CAPABILITY_POINTER;
 
     switch (wlr_input_device->type) {
         case WLR_INPUT_DEVICE_KEYBOARD:

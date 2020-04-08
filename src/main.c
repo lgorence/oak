@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "input.h"
 #include "output.h"
@@ -72,7 +73,10 @@ int main(void) {
     server.layer_shell_new_surface.notify = layer_shell_new_surface_notify;
     wl_signal_add(&server.layer_shell->events.new_surface, &server.layer_shell_new_surface);
 
-    system("gnome-terminal -- htop &");
+    //system("gnome-terminal -- htop &");
+    if (fork() == 0) {
+        execl("/bin/sh", "/bin/sh", "-c", "alacritty --command htop", (void*)NULL);
+    }
 
     wl_display_run(server.wl_display);
 

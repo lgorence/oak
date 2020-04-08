@@ -12,7 +12,7 @@ void surface_map_notify(struct wl_listener *listener, void *data) {
 }
 
 void surface_destroy_notify(struct wl_listener *listener, void *data) {
-    struct oak_view *view = wl_container_of(listener, view, map);
+    struct oak_view *view = wl_container_of(listener, view, destroy);
 
     wl_list_remove(&view->map.link);
     wl_list_remove(&view->destroy.link);
