@@ -37,7 +37,6 @@ void surface_new_notify(struct wl_listener *listener, void *data) {
     wl_signal_add(&surface->events.destroy, &view->destroy);
 
     wlr_xdg_toplevel_v6_set_fullscreen(surface, true);
-    wlr_xdg_toplevel_v6_set_size(surface, 720, 1440);
     wlr_xdg_toplevel_v6_set_activated(surface, true);
 
     wl_list_insert(&server->views, &view->link);
