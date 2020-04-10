@@ -41,3 +41,6 @@ void surface_new_notify(struct wl_listener *listener, void *data) {
 
     wl_list_insert(&server->views, &view->link);
 }
+
+struct oak_view *surface_get_view_for_coord(struct oak_server *server, uint32_t x, uint32_t y) {
+}

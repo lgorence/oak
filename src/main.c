@@ -1,8 +1,10 @@
 #include <wlr/backend.h>
+#include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_gtk_primary_selection.h>
 #include <wlr/types/wlr_idle.h>
 #include <wlr/types/wlr_layer_shell_v1.h>
+#include <wlr/types/wlr_xcursor_manager.h>
 #include <wlr/types/wlr_xdg_shell_v6.h>
 
 #include <assert.h>
@@ -35,7 +37,15 @@ int main(void) {
     server.backend = wlr_backend_autocreate(server.wl_display, NULL);
     assert(server.backend);
 
+    server.output_layout = wlr_output_layout_create();
+
     server.seat = wlr_seat_create(server.wl_display, "seat0");
+
+    server.cursor = wlr_cursor_create();
+    wlr_cursor_attach_output_layout(server.cursor, server.output_layout);
+
+    server.cursor_mgr = wlr_xcursor_manager_create(NULL, 24);
+    wlr_xcursor_manager_load(server.cursor_mgr, 1);
 
     wl_list_init(&server.outputs);
     server.new_output.notify = new_output_notify;

@@ -22,3 +22,5 @@ void surface_map_notify(struct wl_listener *listener, void *data);
 void surface_destroy_notify(struct wl_listener *listener, void *data);
 
 void surface_new_notify(struct wl_listener *listener, void *data);
+
+struct oak_view *surface_get_view_for_coord(struct oak_server *server, uint32_t x, uint32_t y);
