@@ -1,6 +1,6 @@
 #pragma once
 
-#include <wlr/types/wlr_xdg_shell_v6.h>
+#include <wlr/types/wlr_xdg_shell.h>
 
 #include "server.h"
 
@@ -8,7 +8,7 @@ struct oak_view {
     struct wl_list link;
 
     struct oak_server *server;
-    struct wlr_xdg_surface_v6 *surface;
+    struct wlr_xdg_surface *surface;
 
     struct wl_listener map;
     struct wl_listener destroy;

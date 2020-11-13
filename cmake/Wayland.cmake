@@ -19,8 +19,8 @@ function(generate_wayland_protocol_source PROTOCOL_XML DESTINATION)
     generate_wayland_protocol(private-code ${PROTOCOL_XML} "protocol_source/${DESTINATION}")
 endfunction()
 
-generate_wayland_protocol_header("${WAYLAND_PROTOCOLS_DIR}/unstable/xdg-shell/xdg-shell-unstable-v6.xml" "xdg-shell-unstable-v6-protocol.h")
-generate_wayland_protocol_source("${WAYLAND_PROTOCOLS_DIR}/unstable/xdg-shell/xdg-shell-unstable-v6.xml" "xdg-shell-unstable-v6-protocol.c")
+generate_wayland_protocol_header("${WAYLAND_PROTOCOLS_DIR}/stable/xdg-shell/xdg-shell.xml" "xdg-shell-protocol.h")
+generate_wayland_protocol_source("${WAYLAND_PROTOCOLS_DIR}/stable/xdg-shell/xdg-shell.xml" "xdg-shell-protocol.c")
 
 generate_wayland_protocol_header("${CMAKE_CURRENT_LIST_DIR}/../protocol/wlr-layer-shell-unstable-v1.xml" "wlr-layer-shell-unstable-v1-protocol.h")
 generate_wayland_protocol_source("${CMAKE_CURRENT_LIST_DIR}/../protocol/wlr-layer-shell-unstable-v1.xml" "wlr-layer-shell-unstable-v1-protocol.c")

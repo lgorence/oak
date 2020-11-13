@@ -22,7 +22,7 @@ void surface_destroy_notify(struct wl_listener *listener, void *data) {
 }
 
 void surface_new_notify(struct wl_listener *listener, void *data) {
-    struct wlr_xdg_surface_v6 *surface = data;
+    struct wlr_xdg_surface *surface = data;
     struct oak_server *server = wl_container_of(listener, server, new_surface);
     struct oak_view *view = calloc(1, sizeof(struct oak_view));
 
@@ -36,8 +36,8 @@ void surface_new_notify(struct wl_listener *listener, void *data) {
     view->destroy.notify = surface_destroy_notify;
     wl_signal_add(&surface->events.destroy, &view->destroy);
 
-    wlr_xdg_toplevel_v6_set_fullscreen(surface, true);
-    wlr_xdg_toplevel_v6_set_activated(surface, true);
+    wlr_xdg_toplevel_set_fullscreen(surface, true);
+    wlr_xdg_toplevel_set_activated(surface, true);
 
     wl_list_insert(&server->views, &view->link);
 }

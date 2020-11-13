@@ -21,6 +21,6 @@ struct oak_server {
     struct wlr_compositor *compositor;
     struct wlr_seat *seat;
 
-    struct wlr_xdg_shell_v6 *xdg_shell;
+    struct wlr_xdg_shell *xdg_shell;
     struct wlr_layer_shell_v1 *layer_shell;
 };
