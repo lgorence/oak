@@ -20,6 +20,9 @@ struct oak_server {
     struct wlr_backend *backend;
     struct wlr_compositor *compositor;
     struct wlr_seat *seat;
+    struct wlr_output_layout *output_layout;
+    struct wlr_cursor *cursor;
+    struct wlr_xcursor_manager *cursor_mgr;
 
     struct wlr_xdg_shell *xdg_shell;
     struct wlr_layer_shell_v1 *layer_shell;

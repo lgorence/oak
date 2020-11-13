@@ -1,9 +1,11 @@
 #include "input.h"
 
+#include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_keyboard.h>
 #include <wlr/types/wlr_pointer.h>
 #include <wlr/types/wlr_seat.h>
 #include <wlr/types/wlr_touch.h>
+#include <wlr/types/wlr_xcursor_manager.h>
 
 #include <stdlib.h>
 
@@ -30,6 +32,8 @@ void input_new_notify(struct wl_listener *listener, void *data) {
             wl_signal_add(&wlr_input_device->pointer->events.button, &input->pointer_button);
             input->pointer_motion_absolute.notify = pointer_motion_absolute_notify;
             wl_signal_add(&wlr_input_device->pointer->events.motion_absolute, &input->pointer_motion_absolute);
+            wlr_cursor_attach_input_device(server->cursor, wlr_input_device);
+            wlr_xcursor_manager_set_cursor_image(server->cursor_mgr, "left_ptr", server->cursor);
             break;
         case WLR_INPUT_DEVICE_TOUCH:
             printf("Detected as touch.\n");
@@ -115,10 +119,12 @@ void pointer_button_notify(struct wl_listener *listener, void *data) {
 }
 
 void pointer_motion_absolute_notify(struct wl_listener *listener, void *data) {
-    struct oak_input_device *input = wl_container_of(listener, input, pointer_button);
+    struct oak_input_device *input = wl_container_of(listener, input, pointer_motion_absolute);
+    struct oak_server *server = input->server;
     struct wlr_event_pointer_motion_absolute *event = data;
 
     printf("Pointer absolute motion event: (%f,%f)\n", event->x, event->y);
+    wlr_cursor_warp_absolute(server->cursor, input->wlr_device, event->x, event->y);
 }
 
 void touch_down_notify(struct wl_listener *listener, void *data) {
