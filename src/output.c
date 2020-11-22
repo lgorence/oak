@@ -15,10 +15,12 @@ void new_output_notify(struct wl_listener *listener, void *data) {
     struct wlr_output *wlr_output = data;
 
     if (!wl_list_empty(&wlr_output->modes)) {
-        struct wlr_output_mode *mode = wl_container_of(wlr_output->modes.prev, mode, link);
+        struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
         wlr_output_set_mode(wlr_output, mode);
-    } else {
-        //wlr_output_set_custom_mode(wlr_output, 720, 1440, 0);
+        wlr_output_enable(wlr_output, true);
+        if (!wlr_output_commit(wlr_output)) {
+            return;
+        }
     }
 
     struct oak_output *output = calloc(1, sizeof(struct oak_output));
@@ -57,7 +59,7 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
     wlr_output_attach_render(wlr_output, NULL);
     wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
 
-    float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     wlr_renderer_clear(renderer, color);
 
     struct oak_view *_view;

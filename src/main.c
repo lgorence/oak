@@ -37,6 +37,9 @@ int main(void) {
     server.backend = wlr_backend_autocreate(server.wl_display, NULL);
     assert(server.backend);
 
+    server.renderer = wlr_backend_get_renderer(server.backend);
+    wlr_renderer_init_wl_display(server.renderer, server.wl_display);
+
     server.output_layout = wlr_output_layout_create();
 
     server.seat = wlr_seat_create(server.wl_display, "seat0");
@@ -60,6 +63,7 @@ int main(void) {
 
     if (!wlr_backend_start(server.backend)) {
         fprintf(stderr, "Failed to start backend.\n");
+        wlr_backend_destroy(server.backend);
         wl_display_destroy(server.wl_display);
         return 1;
     }
@@ -71,7 +75,7 @@ int main(void) {
     wlr_gtk_primary_selection_device_manager_create(server.wl_display);
     wlr_idle_create(server.wl_display);
 
-    server.compositor = wlr_compositor_create(server.wl_display, wlr_backend_get_renderer(server.backend));
+    server.compositor = wlr_compositor_create(server.wl_display, server.renderer);
     server.xdg_shell = wlr_xdg_shell_create(server.wl_display);
     server.layer_shell = wlr_layer_shell_v1_create(server.wl_display);
     wlr_data_device_manager_create(server.wl_display);
@@ -84,7 +88,7 @@ int main(void) {
     wl_signal_add(&server.layer_shell->events.new_surface, &server.layer_shell_new_surface);
 
     if (fork() == 0) {
-        execl("/bin/sh", "/bin/sh", "-c", "alacritty --command htop", (void*)NULL);
+        execl("/bin/sh", "/bin/sh", "-c", "termite --exec htop", (void*)NULL);
     }
 
     wl_display_run(server.wl_display);

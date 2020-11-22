@@ -18,6 +18,7 @@ struct oak_server {
     struct wl_listener layer_shell_new_surface;
 
     struct wlr_backend *backend;
+    struct wlr_renderer *renderer;
     struct wlr_compositor *compositor;
     struct wlr_seat *seat;
     struct wlr_output_layout *output_layout;
