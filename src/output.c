@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <wlr/backend.h>
 #include <wlr/render/wlr_renderer.h>
@@ -14,14 +15,19 @@ void new_output_notify(struct wl_listener *listener, void *data) {
     struct oak_server *server = wl_container_of(listener, server, new_output);
     struct wlr_output *wlr_output = data;
 
+#ifdef INCEPTION
+    wlr_output_set_custom_mode(wlr_output, 480, 960, 0);
+#else
     if (!wl_list_empty(&wlr_output->modes)) {
         struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
         wlr_output_set_mode(wlr_output, mode);
         wlr_output_enable(wlr_output, true);
         if (!wlr_output_commit(wlr_output)) {
+            fprintf(stderr, "Failed to commit\n");
             return;
         }
     }
+#endif
 
     struct oak_output *output = calloc(1, sizeof(struct oak_output));
     clock_gettime(CLOCK_MONOTONIC, &output->last_frame);
@@ -37,6 +43,16 @@ void new_output_notify(struct wl_listener *listener, void *data) {
     wlr_output_layout_add_auto(server->output_layout, wlr_output);
 
     wlr_output_create_global(wlr_output);
+
+    // TODO: this probably belongs somewhere else.
+    static bool launchedAcorn = false;
+    if (!launchedAcorn && fork() == 0) {
+        // sleeping allows something to propagate inside of wayland.
+        // if we don't, the window we spawn has a chance of getting 1280x720 if in INCEPTION mode.
+        sleep(1);
+        execl("/bin/sh", "/bin/sh", "-c", "~/Dev/C++/Acorn/cmake-build-debug/main", (void*) NULL);
+        launchedAcorn = true;
+    }
 }
 
 void output_destroy_notify(struct wl_listener *listener, void *data) {
@@ -59,7 +75,7 @@ void output_frame_notify(struct wl_listener *listener, void *data) {
     wlr_output_attach_render(wlr_output, NULL);
     wlr_renderer_begin(renderer, wlr_output->width, wlr_output->height);
 
-    float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
     wlr_renderer_clear(renderer, color);
 
     struct oak_view *_view;

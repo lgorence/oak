@@ -61,15 +61,15 @@ int main(void) {
     const char *socket = wl_display_add_socket_auto(server.wl_display);
     assert(socket);
 
+    printf("Running compositor on display '%s'\n", socket);
+    setenv("WAYLAND_DISPLAY", socket, true);
+
     if (!wlr_backend_start(server.backend)) {
         fprintf(stderr, "Failed to start backend.\n");
         wlr_backend_destroy(server.backend);
         wl_display_destroy(server.wl_display);
         return 1;
     }
-
-    printf("Running compositor on display '%s'\n", socket);
-    setenv("WAYLAND_DISPLAY", socket, true);
 
     wl_display_init_shm(server.wl_display);
     wlr_gtk_primary_selection_device_manager_create(server.wl_display);
@@ -86,10 +86,6 @@ int main(void) {
 
     server.layer_shell_new_surface.notify = layer_shell_new_surface_notify;
     wl_signal_add(&server.layer_shell->events.new_surface, &server.layer_shell_new_surface);
-
-    if (fork() == 0) {
-        execl("/bin/sh", "/bin/sh", "-c", "termite --exec htop", (void*)NULL);
-    }
 
     wl_display_run(server.wl_display);
 

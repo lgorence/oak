@@ -14,6 +14,10 @@ add_definitions(-DWLR_USE_UNSTABLE)
 add_custom_target(wayland_protocols
         COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/Wayland.cmake)
 
+if(INCEPTION)
+    add_definitions(-DINCEPTION)
+endif()
+
 add_executable(oak ${SOURCES})
 add_dependencies(oak wayland_protocols)
 target_include_directories(oak PUBLIC include/ ${PIXMAN_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/protocol_header)
